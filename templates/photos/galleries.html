@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Galleries{% endblock %}
+
+{% block content %}
+        <div id="gallery" class="clear">
+            <ul>
+                {% for ps in photosets %}
+                <li class="g-thumb{% if forloop.counter|divisibleby:'3' %} g-last{% endif %}">
+                    <a href="{{ ps.get_absolute_url }}">
+                        <img width="280" height="195" src="{{ ps.get_primary.get_thumbnail_url }}" class="gallery-thumb wp-post-image" />
+                    </a>
+                    <h5>{{ ps.title }}</h5>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

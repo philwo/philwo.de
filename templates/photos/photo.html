@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ photo.title }}{% endblock %}
+{% block extra-head %}
+    <meta name="description" content='This is the photo "{{ photo.title }}", taken by myself, Philipp Wollermann. Enjoy!' />
+{% endblock %}
+
+{% block content %}
+        <h1 class="title gallery-title">Photo: {{ photo.title }}</h1>
+        <div style="text-align: center">
+            <img src="{{ photo.get_gallery_url }}" alt="{{ photo.title }}" />
+        </div>
+
+        <div id="disqus_thread"></div>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block extra-script %}
+{{ block.super }}
+    <script type="text/javascript">
+        var disqus_shortname = '{{ DISQUS_FORUM_SHORTNAME }}';
+        var disqus_identifier = 'photos/photo/{{ photo.id }}';
+        var disqus_url = 'http://{{ current_site.domain }}{{ photo.get_absolute_url }}';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+{% endblock extra-script %}

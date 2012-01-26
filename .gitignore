@@ -1,0 +1,17 @@
+*.log
+*.pot
+*.pyc
+*.pyo
+local_settings.py
+
+/media/*
+!/media/.gitkeep
+/deploy/*
+!/deploy/.gitkeep
+/static/*
+!/static/.gitkeep
+
+# We can't include photography_pro, because it's a commercially licensed theme
+# Get it from http://thethemefoundry.com/photography/
+/base/static/photography_pro/
+!/base/static/photography_pro/.gitkeep

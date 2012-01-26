@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load base_indent %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra-head %}
+    <meta name="description" content="Hi, I'm Philipp from Germany. I'm a student, developing web applications and taking photos as a hobby, currently living in Japan. This is my blog and photo gallery." />
+{% endblock %}
+
+{% block content %}
+        <div id="home-photo">
+            <div id="slideshow">
+                {{ flatpage.content|indent:16|safe }}
+            </div>
+            <div class="frame fr-home"></div>
+        </div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block extra-script %}
+{{ block.super }}
+    <script type="text/javascript" charset="utf-8">
+        jQuery(document).ready(function() {
+            jQuery('#slideshow').cycle({
+                delay: 2000,
+                height: 534,
+                width: 948
+            });
+        });
+    </script>
+{% endblock extra-script %}

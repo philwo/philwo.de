@@ -1,0 +1,64 @@
+{% load article_tags %}
+        <div id="sidebar">
+            <div class="subscribe clear">
+                <h5>Subscribe</h5>
+                <ul>
+                    <li><a href="http://www.facebook.com/philwo"><img src="{{ STATIC_URL }}photography_pro/images/flw-facebook.png" alt="Facebook"/></a></li>
+                    <li><a href="http://www.flickr.com/photos/philwo/"><img src="{{ STATIC_URL }}photography_pro/images/flw-flickr.png" alt="Flickr"/></a></li>
+                    <li><a href="{% url articles_rss_feed_latest %}"><img src="{{ STATIC_URL }}photography_pro/images/flw-rss.png" alt="RSS Feed"/></a></li>
+                </ul>
+            </div>
+            <ul>
+                <li class="widget">
+                    <h2 class="widgettitle">Recent Articles</h2>
+                    {% get_articles 5 as recent %}
+                    {% for article in recent %}
+                    {% if forloop.first %}<ul>{% endif %}
+                        <li><a href="{{ article.get_absolute_url }}" title="Read this article">{{ article.title }}</a></li>
+                    {% if forloop.last %}</ul>{% endif %}
+                    {% endfor %}
+                </li>
+
+                <li class="widget">
+                    <h2 class="widgettitle">Article Archives</h2>
+                    {% get_article_archives as archives %}
+                    {% for year in archives %}
+                    {% if forloop.first %}<ul>{% endif %}
+                        <li>
+                            <strong>{{ year.0 }}</strong>
+                            <ul class="months">
+                            {% for month in year.1 %}
+                                <li><a href="{% url articles_in_month month.year,month.month %}" title="View articles posted in this month">{{ month|date:"N" }}</a></li>
+                            {% endfor %}
+                            </ul>
+                            <div class="clear">&nbsp;</div>
+                        </li>
+                    {% if forloop.last %}</ul>{% endif %}
+                    {% endfor %}
+                </li>
+
+                <li class="widget">
+                    <h2 class="widgettitle">Friends</h2>
+                    <ul>
+                        <li><a href="http://www.tanzmusik-online.de/" rel="friend">Simon Franz</a></li>
+                        <li><a href="http://www.christopherharms.de/" rel="friend">Christopher Harms</a></li>
+                        <li><a href="http://www.benjamin-lieberwirth.de/" rel="friend">Benjamin Lieberwirth</a></li>
+                        <li><a href="http://www.pbis.de/" rel="friend">Dr. Oswald Prucker</a></li>
+                        <li><a href="http://www.distractedbysquirrels.com/" rel="friend">Sebastian Sebald</a></li>
+                        <li><a href="https://blueimp.net/" rel="friend">Sebastian Tschan</a></li>
+                    </ul>
+                </li>
+
+                <li class="widget">
+                    <h2 class="widgettitle">Myself</h2>
+                    <ul>
+                        <li><a href="http://www.facebook.com/philwo" rel="me">facebook</a></li>
+                        <li><a href="http://www.flickr.com/people/philwo/" rel="me">flickr</a></li>
+                        <li><a href="http://foursquare.com/user/6536830" rel="me">foursquare</a></li>
+                        <li><a href="https://plus.google.com/106522531522896651394/" rel="me">Google</a></li>
+                        <li><a href="http://www.linkedin.com/in/philwo" rel="me">LinkedIn</a></li>
+                        <li><a href="http://www.xing.com/profile/Philipp_Wollermann" rel="me">Xing</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ photoset.title }}{% endblock %}
+{% block extra-head %}
+    <meta name="description" content='This is the photo gallery "{{ photoset.title }}". All photos were taken by myself, Philipp Wollermann. Enjoy!' />
+{% endblock %}
+
+{% block content %}
+        <h1 class="title gallery-title">Photos of {{ photoset.title }}</h1>
+        <div id="gallery-single">
+            <div class="static-image-container">
+                {% for photo in photoset.photos.all %}
+                <img src="{{ photo.get_thumbnail_url }}" alt="{{ photo.title }}" />
+                {% endfor %}
+            </div>
+        </div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block extra-script %}
+{{ block.super }}
+    <script>
+        var photos = [
+            {% for photo in photoset.photos.all %}
+            { image: '{{ photo.get_gallery_url }}', thumb: '{{ photo.get_thumbnail_url }}', title: '{{ photo.title }}', link: '{{ photo.get_absolute_url }}', uuid: '{{ photo.id }}' }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        Galleria.loadTheme('{{ STATIC_URL }}libs/galleria/1.2.6/themes/philwo/galleria.classic.min.js');
+        $('#gallery-single').galleria({
+            dataSource: photos,
+            transition: 'slide',
+            imageCrop: false,
+            autoplay: false,
+            showInfo: false,
+            height: 540 + 80,
+            extend: function() {
+                this.attachKeyboard({
+                    left: this.prev,
+                    right: this.next
+                });
+
+                // listen to when an image is shown
+                this.bind('image', function(e) {
+                    $(e.imageTarget).css('cursor','pointer').click(this.proxy(function() {
+                        data = this.getData();
+                        if (data.link) {
+                            window.location.href = data.link;
+                        }
+                    }));
+                });
+            }
+        });
+    </script>
+{% endblock extra-script %}

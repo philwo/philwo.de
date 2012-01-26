@@ -1,0 +1,9 @@
+{% extends 'articles/article_list.html' %}
+
+{% block title %}Articles Tagged: {{ tag.name }}{% endblock %}
+
+{% block content %}
+<h4 class="arch-title">Articles Tagged <em>{{ tag.name }}</em>{% ifnotequal paginator.num_pages 1 %}, page {{ page_obj.number }}{% endifnotequal %}</h4>
+
+{{ block.super }}
+{% endblock %}

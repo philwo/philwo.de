@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load article_tags base_indent %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+        <div id="content">
+            {% for article in page_obj.object_list %}
+            <div class="post clear">
+                {% if article.image %}
+                <a href="{{ article.get_absolute_url }}" rel="bookmark" title="Permanent Link to {{ article.title }}">
+                    <img width="628" height="250" src="{{ MEDIA_URL }}{{ article.image }}" class="index-feature wp-post-image" />
+                </a>
+                {% endif %}
+
+                <div class="entry index clear">
+                    <h2 class="title"><a href="{{ article.get_absolute_url }}" rel="bookmark" title="Permanent Link to {{ article.title }}">{{ article.title }}</a></h2>
+
+                    <div class="article article-content">
+                        {{ article.rendered_content|indent:24|safe }}
+                    </div>
+
+                    <div class="comments"><a href="{{ article.get_absolute_url }}#disqus_thread" data-disqus-identifier="blog/article/{{ article.id }}">Comments?</a></div>
+
+                    <div class="date">{{ article.publish_date|date:"F jS, Y" }}</div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if paginator and page_obj and object_list.paginator.num_pages > 1 %}
+            <div class="navigation index">
+                {% if page_obj.has_previous %}
+                <div class="alignleft"><a href="{% get_page_url page_obj.previous_page_number %}">&laquot; newer entries</a></div>
+                {% endif %}
+
+                <div>Page {{ page_obj.number }} of {{ paginator.num_pages }}</div>
+
+                {% if page_obj.has_next %}
+                    <div class="alignright"><a href="{% get_page_url page_obj.next_page_number %}">older entries &rdquo;</a></div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+{% endblock %}
+
+{% block extra-script %}
+{{ block.super }}
+    <script type="text/javascript">
+    var disqus_shortname = '{{ DISQUS_FORUM_SHORTNAME }}';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+    </script>
+{% endblock extra-script %}

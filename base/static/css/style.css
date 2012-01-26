@@ -1,0 +1,66 @@
+.aligncenter {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.alignleft { float: left; }
+.alignright { float: right; }
+
+#gallery ul li {
+   height: 195px;
+}
+
+li.g-thumb h5 {
+    display: none;
+}
+
+li.g-thumb:hover h5 {
+    display: block;
+    margin-top: -97.5px;
+    font-size: 2em;
+    line-height: 0;
+    text-align: center;
+    color: #fff;
+}
+
+#gallery ul li a img {
+    opacity: .99;
+}
+
+#gallery ul li a:hover img {
+    opacity: .15;
+}
+
+body {
+    color: #efefef;
+    font-family: 'Droid Sans', Helvetica, Arial, sans-serif;
+}
+
+p {
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+h1, h2, h3, h4, #title {
+    font-family: 'Droid Serif', Georgia, Times, serif;
+}
+
+a:link, a:visited {
+    color: #ffffff;
+}
+
+#title a {
+    color: #ffffff;
+}
+
+#gallery-single {
+    margin-bottom: 10px;
+}
+
+#copyright {
+    margin-top: 10px;
+}
+
+h1.gallery-title {
+    font-size: 2.2em;
+}

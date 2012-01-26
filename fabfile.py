@@ -20,6 +20,7 @@ from local_settings import DATABASES
 
 # abspath() will ensure, that there is no trailing slash at the end of the path
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
+REMOTE_PROJECT_PATH = '/home/philwo/www/philwo.de/philwo/'
 
 DB_NAME = 'philwo_blog'
 DB_USERNAME = 'philwo_blog'
@@ -78,47 +79,47 @@ def reset():
 
 
 def make_venv():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         #if "VIRTUAL_ENV" not in os.environ:
         #    abort("$VIRTUAL_ENV not found.\n\n")
         #virtualenv = os.environ["VIRTUAL_ENV"]
-        virtualenv = os.path.join(PROJECT_PATH, 'deploy')
+        virtualenv = os.path.join(REMOTE_PROJECT_PATH, 'deploy')
         run("virtualenv2 --clear --no-site-packages --distribute %s" % (virtualenv,))
         run("pip-2.7 install -E %s --requirement requirements.txt" % (virtualenv,))
 
 
 def update_venv():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         #if "VIRTUAL_ENV" not in os.environ:
         #    abort("$VIRTUAL_ENV not found.\n\n")
         #virtualenv = os.environ["VIRTUAL_ENV"]
-        virtualenv = os.path.join(PROJECT_PATH, 'deploy')
+        virtualenv = os.path.join(REMOTE_PROJECT_PATH, 'deploy')
         run("pip-2.7 install -E %s --requirement requirements.txt" % (virtualenv,))
 
 
 def new_secretkey():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         secretkey = ''.join(random.choice(string.letters + string.digits) for i in xrange(50))
         sed('settings.py', '^SECRET_KEY.*', 'SECRET_KEY = "%s"' % (secretkey,))
         run("rm settings.py.bak")
 
 
 def download_media():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         run('rsync -av -e ssh --delete %s/media/ media/' % (SERVER_RSYNCURL,))
 
 
 def deploy():
-    run("rsync -av -e ssh --delete --exclude 'deploy/**' --exclude 'static/**' --exclude '*.pyc' %s/ %s/" % (PROJECT_PATH, SERVER_RSYNCURL,))
+    local("rsync -av -e ssh --delete --exclude '/deploy/**' --exclude '/static/**' --exclude '*.pyc' %s/ %s/" % (PROJECT_PATH, SERVER_RSYNCURL,))
 
 
 def backup_db():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         run("pg_dump -Fc -Z9 --serializable-deferrable %s > %s.pg" % (DB_NAME, DB_NAME,))
 
 
 def restore_db():
-    with cd(PROJECT_PATH):
+    with cd(REMOTE_PROJECT_PATH):
         run("psql -d template1 -c \"DROP DATABASE IF EXISTS %s;\"" % (DB_NAME,))
         run("psql -d template1 -c \"DROP ROLE IF EXISTS %s;\"" % (DB_USERNAME,))
         run("psql -d template1 -c \"CREATE ROLE %s NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN ENCRYPTED PASSWORD '%s';\"" % (DB_USERNAME, DB_PASSWORD,))
@@ -127,13 +128,13 @@ def restore_db():
 
 
 def pull_db():
-    local("ssh %s@%s pg_dump -Fc -Z9 --serializable-deferrable | pg_restore -O -d %s" % (SERVER_USERNAME, SERVER_HOSTNAME, DB_NAME,))
+    local("ssh %s@%s pg_dump -Fc -Z9 --serializable-deferrable %s | pg_restore -Uphilwo -O -d %s" % (DB_NAME, SERVER_USERNAME, SERVER_HOSTNAME, DB_NAME,))
 
 
 def push_db():
-    local("pg_dump -Fc -Z9 --serializable-deferrable | ssh %s@%s pg_restore -O -d %s" % (SERVER_USERNAME, SERVER_HOSTNAME, DB_NAME,))
+    local("pg_dump -Fc -Z9 --serializable-deferrable %s | ssh %s@%s pg_restore -Uphilwo -O -d %s" % (DB_NAME, SERVER_USERNAME, SERVER_HOSTNAME, DB_NAME,))
 
 
 def grep(what):
-    with cd(PROJECT_PATH):
+    with lcd(PROJECT_PATH):
         local("fgrep -ir %s articles base photos templates wsgi *.py | grep -v 'Binary file .* matches'" % (what,))

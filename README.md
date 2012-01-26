@@ -1,3 +1,5 @@
+# philwo.de
+
 This is the source code on which my personal website www.philwo.de runs.
 It's not meant to be a finished product you can use out-of-the-box, even though I tried to make most things configurable and not hardcoded to my personal data.
 However, if you'd like to see how a working, real-life Django-based personal website could be designed, it may suit you well and be a helpful repository for ideas and concepts.

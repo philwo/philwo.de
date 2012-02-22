@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% load markup %}
 
+{% block extra-script %}
+    <script src="{{ STATIC_URL }}js/email.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.email').click(function() {
+                decrypt_and_email(0);
+            });
+        });
+    </script>
+{% endblock extra-script %}
+
 {% block title %}{{ flatpage.title }}{% endblock %}
 
 {% block content %}

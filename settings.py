@@ -50,7 +50,6 @@ CACHES = {
     }
 }
 
-
 # URL Canonicalization and Configuration
 APPEND_SLASH = True
 PREPEND_WWW = False

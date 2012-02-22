@@ -545,4 +545,3 @@ class Attachment(models.Model):
             content_type = 'text_plain'
 
         return content_type
-

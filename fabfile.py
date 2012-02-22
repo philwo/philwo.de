@@ -118,6 +118,9 @@ def restore_db():
 # Deployment
 def deploy():
     local("rsync -av -e ssh --delete --exclude '/deploy/**' --exclude '/static/**' --exclude '*.pyc' %s/ %s/" % (LOCAL_PROJECT_PATH, SERVER_RSYNCURL,))
+    with cd(env.project_path):
+        with prefix("source deploy/bin/activate"):
+            run("./manage.py collectstatic -v0 --noinput")
     sudo("supervisorctl restart gunicorn")
 
 

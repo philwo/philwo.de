@@ -64,3 +64,9 @@ a:link, a:visited {
 h1.gallery-title {
     font-size: 2.2em;
 }
+
+#copyright a:link, #copyright a:visited {
+    font-weight: normal;
+    text-decoration: underline;
+}
+

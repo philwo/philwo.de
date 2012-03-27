@@ -27,9 +27,10 @@ DB_PASSWORD = DATABASES['default']['PASSWORD']
 USER_USERNAME = 'philwo'
 USER_MAIL = 'philipp.wollermann@gmail.com'
 SERVER_USERNAME = 'philwo'
-SERVER_HOSTNAME = 'rory.philwo.de'
+SERVER_HOSTNAME = 'konata.philwo.de'
 SERVER_PATH = '~/www/philwo.de/philwo'
 SERVER_RSYNCURL = '%s@%s:%s' % (SERVER_USERNAME, SERVER_HOSTNAME, SERVER_PATH,)
+MY_APPS = ['base', 'articles', 'photos']
 
 
 # Environments
@@ -47,35 +48,39 @@ def prod():
 def migrate_initial():
     with lcd(LOCAL_PROJECT_PATH):
         with prefix("source deploy/bin/activate"):
-            local("rm -f base/migrations/????_*")
-            local("rm -f articles/migrations/????_*")
-            local("rm -f photos/migrations/????_*")
-            local("./manage.py schemamigration base --initial")
-            local("./manage.py schemamigration articles --initial")
-            local("./manage.py schemamigration photos --initial")
+            for app in MY_APPS:
+                local("rm -f %s/migrations/????_*" % (app,))
+                local("./manage.py schemamigration %s --initial" % (app,))
 
 
 def migrate_auto():
     with lcd(LOCAL_PROJECT_PATH):
         with prefix("source deploy/bin/activate"):
-            local("./manage.py schemamigration base --auto || true")
-            local("./manage.py schemamigration articles --auto || true")
-            local("./manage.py schemamigration photos --auto || true")
+            for app in MY_APPS:
+                local("./manage.py schemamigration %s --auto || true" % (app,))
+
+
+def migrate():
+    with cd(env.project_path):
+        with prefix("source deploy/bin/activate"):
+            run("./manage.py syncdb || true")
+            for app in MY_APPS:
+                local("./manage.py migrate %s || true" % (app,))
 
 
 def bootstrap():
     with cd(env.project_path):
-        make_venv()
+        #make_venv()
         with prefix("source deploy/bin/activate"):
             setup_db()
-            local("rm -rf static")
-            local("mkdir static")
-            local("./manage.py clean_pyc")
-            local("./manage.py collectstatic -v0 --noinput")
-            local("./manage.py syncdb --noinput")
-            local("./manage.py createcachetable cache")
-            local("./manage.py migrate")
-            local("./manage.py createsuperuser --username=%s --email=%s" % (USER_USERNAME, USER_MAIL,))
+            run("rm -rf static")
+            run("mkdir static")
+            run("./manage.py clean_pyc")
+            run("./manage.py collectstatic -v0 --noinput")
+            run("./manage.py syncdb --noinput")
+            run("./manage.py createcachetable cache")
+            run("./manage.py migrate")
+            run("./manage.py createsuperuser --username=%s --email=%s" % (USER_USERNAME, USER_MAIL,))
 
 
 # virtualenv management
@@ -83,13 +88,14 @@ def make_venv():
     with cd(env.project_path):
         virtualenv = os.path.join(env.project_path, 'deploy')
         run("virtualenv2 --clear --no-site-packages --distribute %s" % (virtualenv,))
-        run("pip-2.7 install -E %s --requirement requirements.txt" % (virtualenv,))
+        with prefix("source deploy/bin/activate"):
+            run("pip-2.7 install --requirement requirements.txt")
 
 
 def update_venv():
     with cd(env.project_path):
-        virtualenv = os.path.join(env.project_path, 'deploy')
-        run("pip-2.7 install -E %s --requirement requirements.txt" % (virtualenv,))
+        with prefix("source deploy/bin/activate"):
+            run("pip-2.7 install --requirement requirements.txt")
 
 
 # Database management
@@ -121,7 +127,7 @@ def deploy():
     with cd(env.project_path):
         with prefix("source deploy/bin/activate"):
             run("./manage.py collectstatic -v0 --noinput")
-    sudo("supervisorctl restart gunicorn")
+    sudo("systemctl restart django-philwo.de.service")
 
 
 # Data transfer between dev and prod
@@ -151,7 +157,7 @@ def runserver():
 
 def grep(what):
     with lcd(LOCAL_PROJECT_PATH):
-        local("fgrep -ir %s articles base photos templates wsgi *.py | grep -v 'Binary file .* matches'" % (what,))
+        local("fgrep -ir %s %s templates wsgi *.py | grep -v 'Binary file .* matches'" % (what, " ".join(MY_APPS)))
 
 
 def new_secretkey():

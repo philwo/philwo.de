@@ -3,7 +3,7 @@ South==0.7.3
 psycopg2==2.4.1
 PIL==1.1.7
 flickrapi==1.4.2
-gunicorn==0.13.4
+gunicorn==0.14.1
 Markdown==2.1.1
 typogrify==1.0
 django-tagging==0.3.1

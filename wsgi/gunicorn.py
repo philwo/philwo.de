@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-import multiprocessing
+#import multiprocessing
 
 MY_PATH = os.path.abspath(os.path.split(__file__)[0])
 
 bind = 'unix:%s' % (os.path.join(MY_PATH, 'gunicorn.sock'),)
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = 2
 user = 'philwo'
 group = 'philwo'
 umask = '0000'

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import os
 import os.path
 
-PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
+PROJECT_PATH = os.path.abspath(os.path.join(os.path.split(__file__)[0], '..'))
 
 # Debugging
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 if TEMPLATE_DEBUG:
     TEMPLATE_STRING_IF_INVALID = 'TEMPLATE_INVALID'
@@ -53,7 +52,10 @@ CACHES = {
 # URL Canonicalization and Configuration
 APPEND_SLASH = True
 PREPEND_WWW = False
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'philwo.urls'
+
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'philwo.wsgi.application'
 
 # Multiple Sites Handling
 SITE_ID = 1
@@ -67,6 +69,7 @@ LANGUAGES = (
 USE_I18N = True
 USE_L10N = True
 TIME_ZONE = 'Asia/Tokyo'
+USE_TZ = True
 
 # Session Handling
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
@@ -91,15 +94,10 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
 STATIC_URL = '/static/'
 
-# Admin static files
-ADMIN_MEDIA_ROOT = os.path.join(PROJECT_PATH, 'deploy/lib/python%s.%s/site-packages/django/contrib/admin/media/' % (sys.version_info[0], sys.version_info[1],))
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = ''
 
 # Increase Cookie Security
-SESSION_COOKIE_HTTPONLY = True
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
 
@@ -118,8 +116,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'base.middleware.RemoveEmptyLinesMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'base.middleware.RemoveEmptyLinesMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
@@ -190,9 +188,15 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },

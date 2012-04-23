@@ -16,7 +16,7 @@ from fabric.context_managers import prefix, cd, lcd
 from fabric.utils import abort
 from fabric.contrib.files import sed
 
-from local_settings import DATABASES
+from philwo.local_settings import DATABASES
 
 # abspath() will ensure, that there is no trailing slash at the end of the path
 LOCAL_PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
@@ -36,11 +36,13 @@ MY_APPS = ['base', 'articles', 'photos']
 # Environments
 def dev():
     env.hosts = ['localhost']
+    env.virtualenv_bin = 'virtualenv'
     env.project_path = LOCAL_PROJECT_PATH
 
 
 def prod():
     env.hosts = [SERVER_HOSTNAME]
+    env.virtualenv_bin = 'virtualenv2'
     env.project_path = '/home/philwo/www/philwo.de/philwo/'
 
 
@@ -73,10 +75,9 @@ def bootstrap():
         #make_venv()
         with prefix("source deploy/bin/activate"):
             setup_db()
-            run("rm -rf static")
-            run("mkdir static")
+            run("mkdir -p static")
             run("./manage.py clean_pyc")
-            run("./manage.py collectstatic -v0 --noinput")
+            run("./manage.py collectstatic -v0 --clear --noinput")
             run("./manage.py syncdb --noinput")
             run("./manage.py createcachetable cache")
             run("./manage.py migrate")
@@ -87,7 +88,7 @@ def bootstrap():
 def make_venv():
     with cd(env.project_path):
         virtualenv = os.path.join(env.project_path, 'deploy')
-        run("virtualenv2 --clear --no-site-packages --distribute %s" % (virtualenv,))
+        run("%s --clear --no-site-packages --distribute %s" % (env.virtualenv_bin, virtualenv,))
         with prefix("source deploy/bin/activate"):
             run("pip-2.7 install --requirement requirements.txt")
 
@@ -126,7 +127,8 @@ def deploy():
     local("rsync -av -e ssh --delete --exclude '/deploy/**' --exclude '/static/**' --exclude '*.pyc' %s/ %s/" % (LOCAL_PROJECT_PATH, SERVER_RSYNCURL,))
     with cd(env.project_path):
         with prefix("source deploy/bin/activate"):
-            run("./manage.py collectstatic -v0 --noinput")
+            run("./manage.py collectstatic -v0 --clear --noinput")
+    sudo("systemctl daemon-reload")
     sudo("systemctl restart django-philwo.de.service")
 
 

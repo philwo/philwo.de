@@ -16,3 +16,6 @@ local_settings.py
 # Get it from http://thethemefoundry.com/photography/
 /base/static/photography_pro/
 !/base/static/photography_pro/.gitkeep
+
+philwo_blog.pg
+

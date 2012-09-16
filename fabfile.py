@@ -42,7 +42,7 @@ def dev():
 
 def prod():
     env.hosts = [SERVER_HOSTNAME]
-    env.virtualenv_bin = 'virtualenv2'
+    env.virtualenv_bin = 'virtualenv'
     env.project_path = '/home/philwo/www/philwo.de/philwo/'
 
 
@@ -88,7 +88,7 @@ def bootstrap():
 def make_venv():
     with cd(env.project_path):
         virtualenv = os.path.join(env.project_path, 'deploy')
-        run("%s --clear --no-site-packages --distribute %s" % (env.virtualenv_bin, virtualenv,))
+        run("%s --clear --distribute %s" % (env.virtualenv_bin, virtualenv,))
         with prefix("source deploy/bin/activate"):
             run("pip-2.7 install --requirement requirements.txt")
 
@@ -128,8 +128,7 @@ def deploy():
     with cd(env.project_path):
         with prefix("source deploy/bin/activate"):
             run("./manage.py collectstatic -v0 --clear --noinput")
-    sudo("systemctl daemon-reload")
-    sudo("systemctl restart django-philwo.de.service")
+    sudo("supervisorctl restart django-philwo-philwo_de")
 
 
 # Data transfer between dev and prod

@@ -113,7 +113,7 @@ def setup_db():
 
 def backup_db():
     with cd(env.project_path):
-        run("pg_dump -Fc -Z9 --serializable-deferrable %s > %s.pg" % (DB_NAME, DB_NAME,))
+        run("pg_dump -U%s -Fc -Z9 --serializable-deferrable %s > %s.pg" % (DB_USERNAME, DB_NAME, DB_NAME,))
 
 
 def restore_db():

@@ -96,7 +96,7 @@ def make_venv():
 def update_venv():
     with cd(env.project_path):
         with prefix("source deploy/bin/activate"):
-            run("pip-2.7 install --requirement requirements.txt")
+            run("pip-2.7 install --upgrade --requirement requirements.txt")
 
 
 # Database management
@@ -129,6 +129,10 @@ def deploy():
         with prefix("source deploy/bin/activate"):
             run("./manage.py collectstatic -v0 --clear --noinput")
     sudo("supervisorctl restart django-philwo-philwo_de")
+
+
+def dryrun():
+    local("rsync --dry-run -c -av -e ssh --delete --exclude '/deploy/**' --exclude '/static/**' --exclude '*.pyc' %s/ %s/" % (LOCAL_PROJECT_PATH, SERVER_RSYNCURL,))
 
 
 # Data transfer between dev and prod
